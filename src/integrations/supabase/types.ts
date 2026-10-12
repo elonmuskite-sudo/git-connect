@@ -56,6 +56,48 @@ export type Database = {
         }
         Relationships: []
       }
+      members: {
+        Row: {
+          auth_user_id: string
+          avatar_url: string | null
+          created_at: string
+          email: string
+          email_verified: boolean
+          first_name: string | null
+          full_name: string | null
+          id: string
+          last_name: string | null
+          member_id: string
+          updated_at: string
+        }
+        Insert: {
+          auth_user_id: string
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          email_verified?: boolean
+          first_name?: string | null
+          full_name?: string | null
+          id: string
+          last_name?: string | null
+          member_id: string
+          updated_at?: string
+        }
+        Update: {
+          auth_user_id?: string
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          email_verified?: boolean
+          first_name?: string | null
+          full_name?: string | null
+          id?: string
+          last_name?: string | null
+          member_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       storage_files: {
         Row: {
           chat_id: string | null
@@ -191,6 +233,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      lookup_member_by_nexus_id: {
+        Args: { p_member_id: string }
+        Returns: {
+          avatar_url: string
+          first_name: string
+          full_name: string
+          id: string
+          last_name: string
+          member_id: string
+        }[]
       }
     }
     Enums: {
