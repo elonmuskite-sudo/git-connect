@@ -36,6 +36,8 @@ function normalizeUser(user) {
     emailVerified: user.email_verified || user.emailVerified || false,
     role: isAdminRole(rawRole) ? 'admin' : rawRole,
     avatarUrl: user.avatar_url || user.avatarUrl || null,
+    bio: user.bio ?? user.bioText ?? '',
+    interests: user.interests || [],
     createdAt: user.created_at || user.createdAt || user.$createdAt
   }
 }
