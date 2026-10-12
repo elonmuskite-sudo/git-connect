@@ -110,7 +110,7 @@ export async function getMemberProfile(userId) {
   if (!supabase) throw new Error('Supabase Auth is not configured.')
   const { data, error } = await supabase
     .from('members')
-    .select('id, member_id, first_name, last_name, full_name, email, email_verified, avatar_url, created_at')
+    .select('id, member_id, first_name, last_name, full_name, email, email_verified, avatar_url, bio, interests, created_at')
     .eq('id', userId)
     .single()
   if (error) throw error
@@ -157,12 +157,14 @@ export async function updateMemberProfile(userId, updates) {
   if (updates.lastName !== undefined) profileUpdates.last_name = updates.lastName
   if (updates.fullName !== undefined) profileUpdates.full_name = updates.fullName
   if (updates.avatarUrl !== undefined) profileUpdates.avatar_url = updates.avatarUrl
+  if (updates.bio !== undefined) profileUpdates.bio = updates.bio
+  if (updates.interests !== undefined) profileUpdates.interests = updates.interests
 
   const { data, error } = await supabase
     .from('members')
     .update(profileUpdates)
     .eq('id', userId)
-    .select('id, member_id, first_name, last_name, full_name, email, email_verified, avatar_url, created_at')
+    .select('id, member_id, first_name, last_name, full_name, email, email_verified, avatar_url, bio, interests, created_at')
     .single()
   if (error) throw error
   const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })

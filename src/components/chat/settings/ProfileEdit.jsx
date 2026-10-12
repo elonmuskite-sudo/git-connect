@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../../lib/AuthContext'
 import Avatar from '../Avatar'
+import BioWriter from './BioWriter'
 import { Camera, Copy, Check, Save } from 'lucide-react'
 
 export default function ProfileEdit() {
   const { user, updateProfile } = useAuth()
   const [firstName, setFirstName] = useState(user?.firstName || '')
   const [lastName, setLastName] = useState(user?.lastName || '')
+  const [bio, setBio] = useState(user?.bio || '')
+  const [interests, setInterests] = useState(user?.interests || [])
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState(user?.avatarUrl || null)
@@ -17,6 +20,8 @@ export default function ProfileEdit() {
       setFirstName(user.firstName || '')
       setLastName(user.lastName || '')
       setAvatarPreview(user.avatarUrl || null)
+      setBio(user.bio || '')
+      setInterests(user.interests || [])
     }
   }, [user])
 
@@ -51,7 +56,9 @@ export default function ProfileEdit() {
     const updates = {
       firstName,
       lastName,
-      fullName: `${firstName} ${lastName}`.trim()
+      fullName: `${firstName} ${lastName}`.trim(),
+      bio: bio.trim(),
+      interests,
     }
     if (avatarPreview && avatarPreview !== user?.avatarUrl) {
       updates.avatarUrl = avatarPreview
@@ -150,6 +157,8 @@ export default function ProfileEdit() {
             />
           </div>
         </div>
+
+        <BioWriter name={`${firstName} ${lastName}`.trim()} bio={bio} setBio={setBio} interests={interests} setInterests={setInterests} />
 
         <button
           type="submit"
