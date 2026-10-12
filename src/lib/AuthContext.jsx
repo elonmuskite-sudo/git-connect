@@ -14,7 +14,14 @@ import {
   verifyEmailCode as verifyEmailOtp,
 } from './supabase'
 
-const AuthContext = createContext()
+const noopAsync = async () => { throw new Error('Account services are still loading. Please try again.') }
+const DEFAULT_AUTH = {
+  user: null, loading: true, login: noopAsync, logout: async () => {}, register: noopAsync,
+  verifyEmailCode: noopAsync, resendVerificationCode: noopAsync, updateProfile: async () => {},
+  requestPasswordReset: noopAsync, resetPassword: noopAsync,
+}
+// Reuse one context across hot reloads so the provider and consumers never split
+const AuthContext = globalThis.__nexusAuthContext || (globalThis.__nexusAuthContext = createContext(DEFAULT_AUTH))
 
 function normalizeUser(user) {
   const rawRole = user.role || user.user_role || user.profile_role || 'user'
@@ -219,7 +226,7 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext) || DEFAULT_AUTH
 }
 
 export { formatNexusIdForDisplay }
