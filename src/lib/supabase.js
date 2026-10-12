@@ -110,11 +110,12 @@ export async function getMemberProfile(userId) {
   if (!supabase) throw new Error('Supabase Auth is not configured.')
   const { data, error } = await supabase
     .from('members')
-    .select('id, member_id, first_name, last_name, full_name, email, email_verified, role, avatar_url, created_at')
+    .select('id, member_id, first_name, last_name, full_name, email, email_verified, avatar_url, created_at')
     .eq('id', userId)
     .single()
   if (error) throw error
-  return data
+  const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+  return { ...data, role: isAdmin ? 'admin' : 'user' }
 }
 
 export async function findMemberByNexusId(nexusId) {
@@ -161,10 +162,11 @@ export async function updateMemberProfile(userId, updates) {
     .from('members')
     .update(profileUpdates)
     .eq('id', userId)
-    .select('id, member_id, first_name, last_name, full_name, email, email_verified, role, avatar_url, created_at')
+    .select('id, member_id, first_name, last_name, full_name, email, email_verified, avatar_url, created_at')
     .single()
   if (error) throw error
-  return data
+  const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+  return { ...data, role: isAdmin ? 'admin' : 'user' }
 }
 
 export function getSupabaseConfig() {
