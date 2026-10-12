@@ -14,16 +14,187 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      identity_verifications: {
+        Row: {
+          created_at: string
+          id: string
+          id_document_path: string
+          match_score: number | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_note: string | null
+          selfie_path: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          id_document_path: string
+          match_score?: number | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          selfie_path: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          id_document_path?: string
+          match_score?: number | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_note?: string | null
+          selfie_path?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      storage_files: {
+        Row: {
+          chat_id: string | null
+          created_at: string
+          duration_seconds: number | null
+          file_name: string
+          file_type: string
+          id: string
+          mime_type: string | null
+          size_bytes: number
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          chat_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          file_name: string
+          file_type: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number
+          storage_path: string
+          user_id: string
+        }
+        Update: {
+          chat_id?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_type?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      storage_purchases: {
+        Row: {
+          added_bytes: number
+          amount_cents: number
+          checkout_session_id: string | null
+          created_at: string
+          currency: string
+          id: string
+          receipt_url: string | null
+          status: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          added_bytes: number
+          amount_cents: number
+          checkout_session_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          receipt_url?: string | null
+          status?: string
+          tier: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          added_bytes?: number
+          amount_cents?: number
+          checkout_session_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          receipt_url?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_storage_quotas: {
+        Row: {
+          created_at: string
+          quota_bytes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          quota_bytes?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          quota_bytes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_verification_badge: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +321,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
