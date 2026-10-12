@@ -87,10 +87,10 @@ export default function VerificationSettings() {
       if (up1.error) throw up1.error
       const up2 = await supabase.storage.from('identity-docs').upload(idPath, idDoc, { contentType: idDoc.type })
       if (up2.error) throw up2.error
-      const { error: insError } = await supabase.from('identity_verifications').insert({
+      const { error: insError } = await supabase.from('identity_verifications').upsert({
         user_id: user.id, status: 'pending', match_score: Number(score.toFixed(3)),
-        selfie_path: selfiePath, id_document_path: idPath,
-      })
+        selfie_path: selfiePath, id_document_path: idPath, reviewer_note: null,
+      }, { onConflict: 'user_id' })
       if (insError) throw insError
       setRecord({ status: 'pending', match_score: score })
     } catch (err) {
