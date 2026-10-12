@@ -10,8 +10,8 @@ const json = (data: unknown, status = 200) =>
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   try {
-    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
-    if (!stripeKey) return json({ error: 'Payments are not set up yet.' }, 503)
+    const apiKey = Deno.env.get('NOWPAYMENTS_API_KEY')
+    if (!apiKey) return json({ error: 'Payments are not set up yet.' }, 503)
 
     const token = req.headers.get('Authorization')?.replace('Bearer ', '')
     if (!token) return json({ error: 'Sign in required.' }, 401)
@@ -24,34 +24,32 @@ Deno.serve(async (req) => {
     const tier = STORAGE_TIERS[parsed.data.tier]
     if (!tier) return json({ error: 'Unknown storage plan.' }, 400)
 
-    const params = new URLSearchParams({
-      mode: 'payment',
-      'line_items[0][quantity]': '1',
-      'line_items[0][price_data][currency]': 'usd',
-      'line_items[0][price_data][unit_amount]': String(tier.amountCents),
-      'line_items[0][price_data][product_data][name]': tier.label,
-      success_url: `${parsed.data.returnUrl}?purchase=success`,
-      cancel_url: `${parsed.data.returnUrl}?purchase=cancelled`,
-      client_reference_id: user.id,
-      'metadata[user_id]': user.id,
-      'metadata[tier]': parsed.data.tier,
-      'payment_intent_data[receipt_email]': user.email ?? '',
-    })
-    if (user.email) params.set('customer_email', user.email)
-
-    const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${stripeKey}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params,
-    })
-    const session = await res.json()
-    if (!res.ok) return json({ error: session?.error?.message || 'Checkout failed.' }, 502)
-
-    await admin.from('storage_purchases').insert({
+    const { data: purchase, error: insErr } = await admin.from('storage_purchases').insert({
       user_id: user.id, tier: parsed.data.tier, added_bytes: tier.addedBytes,
-      amount_cents: tier.amountCents, currency: 'usd', status: 'pending', checkout_session_id: session.id,
+      amount_cents: tier.amountCents, currency: 'usd', status: 'pending',
+    }).select('id').single()
+    if (insErr) return json({ error: insErr.message }, 500)
+
+    const res = await fetch('https://api.nowpayments.io/v1/invoice', {
+      method: 'POST',
+      headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price_amount: tier.amountCents / 100,
+        price_currency: 'usd',
+        order_id: purchase.id,
+        order_description: tier.label,
+        ipn_callback_url: `${Deno.env.get('SUPABASE_URL')}/functions/v1/nowpayments-webhook`,
+        success_url: `${parsed.data.returnUrl}?purchase=success`,
+        cancel_url: `${parsed.data.returnUrl}?purchase=cancelled`,
+      }),
     })
-    return json({ url: session.url })
+    const invoice = await res.json()
+    if (!res.ok || !invoice?.invoice_url) {
+      await admin.from('storage_purchases').update({ status: 'failed' }).eq('id', purchase.id)
+      return json({ error: invoice?.message || 'Checkout failed.' }, 502)
+    }
+    await admin.from('storage_purchases').update({ checkout_session_id: String(invoice.id), receipt_url: invoice.invoice_url }).eq('id', purchase.id)
+    return json({ url: invoice.invoice_url })
   } catch (e) {
     return json({ error: e instanceof Error ? e.message : 'Unexpected error' }, 500)
   }

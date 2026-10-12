@@ -5,6 +5,7 @@ import Header from '../components/Header'
 import BottomNav from '../components/chat/BottomNav'
 import AppTopNav from '../components/chat/AppTopNav'
 import NotificationStack from '../components/chat/NotificationStack'
+import IdentityReviewQueue from '../components/IdentityReviewQueue'
 
 export default function AdminDashboard() {
   const { user } = useAuth()
@@ -114,6 +115,7 @@ export default function AdminDashboard() {
             </section>
           </div>
         )}
+        <IdentityReviewQueue />
       </main>
 
       <BottomNav />

@@ -45,7 +45,7 @@ export default function StorageUpgrades() {
         <Sparkles className="w-4 h-4 text-primary" />
         <p className="font-semibold text-foreground">Get more storage</p>
       </div>
-      {status === 'success' && <p className="text-sm text-primary">Payment received — your new limit appears within a few seconds. A receipt was emailed to you.</p>}
+      {status === 'success' && <p className="text-sm text-primary">Payment received — your new limit appears once the payment is confirmed, and a receipt is emailed to you.</p>}
       {status === 'cancelled' && <p className="text-sm text-muted-foreground">Checkout cancelled.</p>}
       <div className="grid grid-cols-3 gap-2">
         {TIERS.map((t) => (
