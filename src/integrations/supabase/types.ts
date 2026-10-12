@@ -60,12 +60,14 @@ export type Database = {
         Row: {
           auth_user_id: string
           avatar_url: string | null
+          bio: string | null
           created_at: string
           email: string
           email_verified: boolean
           first_name: string | null
           full_name: string | null
           id: string
+          interests: string[] | null
           last_name: string | null
           member_id: string
           updated_at: string
@@ -73,12 +75,14 @@ export type Database = {
         Insert: {
           auth_user_id: string
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email: string
           email_verified?: boolean
           first_name?: string | null
           full_name?: string | null
           id: string
+          interests?: string[] | null
           last_name?: string | null
           member_id: string
           updated_at?: string
@@ -86,15 +90,53 @@ export type Database = {
         Update: {
           auth_user_id?: string
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string
           email_verified?: boolean
           first_name?: string | null
           full_name?: string | null
           id?: string
+          interests?: string[] | null
           last_name?: string | null
           member_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_webhook_events: {
+        Row: {
+          error: string | null
+          id: string
+          order_id: string | null
+          outcome: string
+          payload: Json | null
+          payment_id: string | null
+          payment_status: string | null
+          received_at: string
+          signature_valid: boolean
+        }
+        Insert: {
+          error?: string | null
+          id?: string
+          order_id?: string | null
+          outcome?: string
+          payload?: Json | null
+          payment_id?: string | null
+          payment_status?: string | null
+          received_at?: string
+          signature_valid?: boolean
+        }
+        Update: {
+          error?: string | null
+          id?: string
+          order_id?: string | null
+          outcome?: string
+          payload?: Json | null
+          payment_id?: string | null
+          payment_status?: string | null
+          received_at?: string
+          signature_valid?: boolean
         }
         Relationships: []
       }
