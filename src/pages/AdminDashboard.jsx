@@ -6,6 +6,7 @@ import BottomNav from '../components/chat/BottomNav'
 import AppTopNav from '../components/chat/AppTopNav'
 import NotificationStack from '../components/chat/NotificationStack'
 import IdentityReviewQueue from '../components/IdentityReviewQueue'
+import PaymentWebhookLog from '../components/PaymentWebhookLog'
 
 export default function AdminDashboard() {
   const { user } = useAuth()
@@ -115,6 +116,7 @@ export default function AdminDashboard() {
             </section>
           </div>
         )}
+        <PaymentWebhookLog />
         <IdentityReviewQueue />
       </main>
 
